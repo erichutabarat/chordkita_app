@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:chordkita/features/home/domain/entities/chordsong_item.dart';
 import 'package:flutter/material.dart';
 

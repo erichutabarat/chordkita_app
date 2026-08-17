@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:chordkita/features/home/data/samples/chord_sample.dart';
+import 'package:chordkita/features/home/presentation/widgets/alphabet_filter.dart';
 import 'package:chordkita/features/home/presentation/widgets/chordlist_component.dart';
 import 'package:chordkita/features/home/presentation/widgets/chordsearch_bar.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _selectedFilter = 'All';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,6 +47,20 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (value) {
                 if (kDebugMode) {
                   print('Searching for: $value');
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // ALphabet Filter Bar
+            AlphabetFilterBar(
+              selectedCharacter: _selectedFilter,
+              onSelected: (char) {
+                setState(() {
+                  _selectedFilter = char;
+                });
+                if (kDebugMode) {
+                  print('Selected filter: $char');
                 }
               },
             ),
