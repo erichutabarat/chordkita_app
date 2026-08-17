@@ -23,7 +23,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentPage],
+      body: SafeArea(child: _pages[_currentPage]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentPage,
         onDestinationSelected: (index) {
