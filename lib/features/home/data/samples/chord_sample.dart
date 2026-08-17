@@ -31,7 +31,7 @@ final newlyAddedSongs = [
   ),
 ];
 
-final topSongs = [
+final List<ChordSongItemData> topSongs = [
   ChordSongItemData(
     id: 1,
     songName: 'Akad',
