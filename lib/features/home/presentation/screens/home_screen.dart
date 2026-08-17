@@ -1,3 +1,5 @@
+import 'package:chordkita/features/home/presentation/widgets/chordsearch_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,15 +13,48 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.music_note, size: 64, color: Colors.amber),
-            SizedBox(height: 16),
-            Text(
-              'Your chord library is getting ready...',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            // Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.amber, width: 2),
+                color: Colors.amber.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: const Text(
+                  'Welcome to ChordKita!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            ChordSearchBar(
+              readOnly: false,
+              onChanged: (value) {
+                if (kDebugMode) {
+                  print('Searching for: $value');
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            const Center(
+              child: Column(
+                children: [
+                  Icon(Icons.music_note, size: 64, color: Colors.amber),
+                  SizedBox(height: 16),
+                  Text(
+                    'Your chord library is getting ready...',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
