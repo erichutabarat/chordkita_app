@@ -1,3 +1,7 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:chordkita/features/home/data/samples/chord_sample.dart';
+import 'package:chordkita/features/home/presentation/widgets/chordlist_component.dart';
 import 'package:chordkita/features/home/presentation/widgets/chordsearch_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,17 +48,28 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             const SizedBox(height: 20),
-            const Center(
-              child: Column(
-                children: [
-                  Icon(Icons.music_note, size: 64, color: Colors.amber),
-                  SizedBox(height: 16),
-                  Text(
-                    'Your chord library is getting ready...',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
+
+            // Top Chord Section
+            ChordListComponent(
+              title: "🔥 Top Chords",
+              items: topSongs,
+              onSeeAllPressed: () {
+                if (kDebugMode) {
+                  print('See all top chords clicked');
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Newly Added Chord Section
+            ChordListComponent(
+              title: "✨ Newly Added Songs",
+              items: newlyAddedSongs,
+              onSeeAllPressed: () {
+                if (kDebugMode) {
+                  print('See all newly added clicked');
+                }
+              },
             ),
           ],
         ),
