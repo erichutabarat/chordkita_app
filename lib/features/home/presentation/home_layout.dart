@@ -1,5 +1,7 @@
 import 'package:chordkita/features/home/presentation/screens/favorite_screen.dart';
 import 'package:chordkita/features/home/presentation/screens/home_screen.dart';
+import 'package:chordkita/features/home/presentation/screens/profile_screen.dart';
+import 'package:chordkita/features/home/presentation/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeLayout extends StatefulWidget {
@@ -11,7 +13,12 @@ class HomeLayout extends StatefulWidget {
 
 class _HomeLayoutState extends State<HomeLayout> {
   int _currentPage = 0;
-  final List<Widget> _pages = [HomeScreen(), FavoriteScreen()];
+  final List<Widget> _pages = [
+    HomeScreen(),
+    SearchScreen(),
+    FavoriteScreen(),
+    ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +38,19 @@ class _HomeLayoutState extends State<HomeLayout> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.monitor_heart_outlined),
-            selectedIcon: Icon(Icons.monitor_heart_rounded),
+            icon: Icon(Icons.search_outlined),
+            selectedIcon: Icon(Icons.search_rounded),
+            label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border_outlined),
+            selectedIcon: Icon(Icons.favorite_rounded),
             label: 'Favorites',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outlined),
+            selectedIcon: Icon(Icons.person_rounded),
+            label: 'Profile',
           ),
         ],
       ),
