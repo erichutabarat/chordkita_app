@@ -238,7 +238,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           );
                           // Navigasi ke halaman utama/home
-                          Navigator.pushReplacementNamed(context, '/home');
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/home',
+                            arguments: state.user,
+                          );
                         }
                       },
                       builder: (context, state) {

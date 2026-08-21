@@ -4,10 +4,21 @@ import 'package:chordkita/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final User? user;
 
   const ProfileScreen({super.key, this.user});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    print(widget.user);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +33,11 @@ class ProfileScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.grey.shade50,
       ),
-      body: user != null
-          ? _AuthenticatedProfileView(name: user!.name, email: user!.email)
+      body: widget.user != null
+          ? _AuthenticatedProfileView(
+              name: widget.user!.name,
+              email: widget.user!.email,
+            )
           : const _GuestProfileView(),
     );
   }

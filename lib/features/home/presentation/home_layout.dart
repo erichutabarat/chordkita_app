@@ -26,6 +26,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       const FavoriteScreen(),
       ProfileScreen(user: widget.user),
     ];
+    print(widget.user);
   }
 
   @override

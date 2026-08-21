@@ -155,7 +155,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             );
-                            Navigator.pushReplacementNamed(context, '/home');
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/home',
+                              arguments: state.user,
+                            );
                           }
                         },
                         builder: (context, state) {
