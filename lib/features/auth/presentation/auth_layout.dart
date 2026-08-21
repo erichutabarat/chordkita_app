@@ -17,7 +17,7 @@ class _AuthLayoutState extends State<AuthLayout> {
       LoginScreen(onNavigateToRegister: _toRegisterScreen),
       RegisterScreen(onNavigateToLogin: _toLoginScreen),
     ];
-    return Scaffold(body: screens[_currentIndex]);
+    return Scaffold(body: SafeArea(child: screens[_currentIndex]));
   }
 
   void _toLoginScreen() {

@@ -1,3 +1,4 @@
+import 'package:chordkita/features/auth/presentation/wdigets/auth_header.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [Text('Login Screen')]),
+      body: Column(children: [AuthHeader(), Text('Login Screen')]),
       bottomNavigationBar: BottomAppBar(
         child: TextButton(
           onPressed: widget.onNavigateToRegister,
