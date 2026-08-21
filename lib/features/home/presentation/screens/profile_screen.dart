@@ -1,11 +1,13 @@
+import 'package:chordkita/features/auth/domain/entities/user.dart';
 import 'package:chordkita/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:chordkita/features/auth/presentation/bloc/auth_event.dart';
-import 'package:chordkita/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final User? user;
+
+  const ProfileScreen({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -20,26 +22,13 @@ class ProfileScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.grey.shade50,
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is AuthAuthenticated) {
-            return _AuthenticatedProfileView(
-              name: state.user.name,
-              email: state.user.email,
-            );
-          } else {
-            // Ditampilkan untuk AuthGuest, AuthUnauthenticated, atau AuthInitial
-            return const _GuestProfileView();
-          }
-        },
-      ),
+      body: user != null
+          ? _AuthenticatedProfileView(name: user!.name, email: user!.email)
+          : const _GuestProfileView(),
     );
   }
 }
 
-// ==========================================
-// TAMPILAN 1: USER SUDAH LOGIN
-// ==========================================
 class _AuthenticatedProfileView extends StatelessWidget {
   final String name;
   final String email;
@@ -71,7 +60,6 @@ class _AuthenticatedProfileView extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Avatar dengan inisial nama
                 CircleAvatar(
                   radius: 32,
                   backgroundColor: theme.primaryColor.withOpacity(0.15),
@@ -154,9 +142,7 @@ class _AuthenticatedProfileView extends StatelessWidget {
             width: double.infinity,
             height: 52,
             child: OutlinedButton.icon(
-              onPressed: () {
-                _showLogoutDialog(context);
-              },
+              onPressed: () => _showLogoutDialog(context),
               icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
               label: const Text(
                 'Keluar Akun',
@@ -167,7 +153,7 @@ class _AuthenticatedProfileView extends StatelessWidget {
                 ),
               ),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.redAccent),
+                side: const BorderSide(color: Colors.redAccent),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -195,6 +181,11 @@ class _AuthenticatedProfileView extends StatelessWidget {
             onPressed: () {
               Navigator.pop(dialogContext);
               context.read<AuthBloc>().add(LogoutRequested());
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/auth',
+                (route) => false,
+              );
             },
             child: const Text(
               'Keluar',
@@ -207,9 +198,6 @@ class _AuthenticatedProfileView extends StatelessWidget {
   }
 }
 
-// ==========================================
-// TAMPILAN 2: USER GUEST / UNAUTHENTICATED
-// ==========================================
 class _GuestProfileView extends StatelessWidget {
   const _GuestProfileView();
 
@@ -223,7 +211,6 @@ class _GuestProfileView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon Hero dengan efek Glow/Shadow
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -237,13 +224,11 @@ class _GuestProfileView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-
             const Text(
               'Akses Fitur Lengkap',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-
             Text(
               'Masuk atau buat akun untuk menyimpan chord favorit, melihat riwayat pencarian, dan fitur menarik lainnya.',
               textAlign: TextAlign.center,
@@ -254,8 +239,6 @@ class _GuestProfileView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-
-            // Tombol Login / Register Main CTA
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -283,7 +266,6 @@ class _GuestProfileView extends StatelessWidget {
   }
 }
 
-// Helper Widget untuk ListItem di Menu Profil
 class _ProfileMenuItem extends StatelessWidget {
   final IconData icon;
   final String title;

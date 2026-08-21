@@ -1,3 +1,4 @@
+// auth_bloc.dart
 import 'package:chordkita/features/auth/data/repositories/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_event.dart';
@@ -9,7 +10,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required AuthRepository authRepository})
     : _authRepository = authRepository,
       super(AuthInitial()) {
-    // Handler Login
+    // 1. App Started Check
+    on<AppStarted>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        final user = await _authRepository.checkSavedSession();
+        if (user != null) {
+          emit(AuthAuthenticated(user: user));
+        } else {
+          emit(AuthUnauthenticated());
+        }
+      } catch (_) {
+        emit(AuthUnauthenticated());
+      }
+    });
+
+    // 2. Guest Mode
+    on<GuestModeRequested>((event, emit) {
+      emit(AuthGuest());
+    });
+
+    // 3. Login
     on<LoginSubmitted>((event, emit) async {
       emit(AuthLoading());
       try {
@@ -23,7 +44,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // Handler Register
+    // 4. Register
     on<RegisterSubmitted>((event, emit) async {
       emit(AuthLoading());
       try {
@@ -38,8 +59,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // Handler Logout
-    on<LogoutRequested>((event, emit) {
+    // 5. Logout
+    on<LogoutRequested>((event, emit) async {
+      await _authRepository.clearSession();
       emit(AuthUnauthenticated());
     });
   }

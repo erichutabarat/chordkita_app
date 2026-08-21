@@ -12,6 +12,8 @@ class AuthAuthenticated extends AuthState {
   AuthAuthenticated({required this.user});
 }
 
+class AuthGuest extends AuthState {}
+
 class AuthUnauthenticated extends AuthState {}
 
 class AuthError extends AuthState {

@@ -58,7 +58,12 @@ class AuthRepository {
     await Future.delayed(const Duration(seconds: 1));
 
     if (email.contains("@") && password.length >= 6) {
-      return User(email: email, name: name, id: 1);
+      final user = User(id: 1, email: email, name: "Eric Daniel");
+      const dummyToken = "jwt_token_xyz_123";
+
+      await saveSession(user: user, token: dummyToken);
+
+      return user;
     } else {
       throw Exception(
         "Format email tidak valid atau password kurang dari 6 karakter.",

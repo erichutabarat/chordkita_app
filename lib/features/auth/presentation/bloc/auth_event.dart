@@ -1,5 +1,7 @@
 abstract class AuthEvent {}
 
+class AppStarted extends AuthEvent {}
+
 class LoginSubmitted extends AuthEvent {
   final String email;
   final String password;
@@ -18,5 +20,7 @@ class RegisterSubmitted extends AuthEvent {
     required this.password,
   });
 }
+
+class GuestModeRequested extends AuthEvent {}
 
 class LogoutRequested extends AuthEvent {}

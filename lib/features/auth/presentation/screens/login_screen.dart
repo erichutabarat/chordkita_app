@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             );
-                            // TODO: Navigasi ke HomeScreen di sini
+                            Navigator.pushReplacementNamed(context, '/home');
                           }
                         },
                         builder: (context, state) {

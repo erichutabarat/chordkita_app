@@ -1,3 +1,4 @@
+import 'package:chordkita/features/auth/domain/entities/user.dart';
 import 'package:chordkita/features/home/presentation/screens/favorite_screen.dart';
 import 'package:chordkita/features/home/presentation/screens/home_screen.dart';
 import 'package:chordkita/features/home/presentation/screens/profile_screen.dart';
@@ -5,7 +6,8 @@ import 'package:chordkita/features/home/presentation/screens/search_screen.dart'
 import 'package:flutter/material.dart';
 
 class HomeLayout extends StatefulWidget {
-  const HomeLayout({super.key});
+  final User? user;
+  const HomeLayout({super.key, this.user});
 
   @override
   State<HomeLayout> createState() => _HomeLayoutState();
@@ -13,12 +15,18 @@ class HomeLayout extends StatefulWidget {
 
 class _HomeLayoutState extends State<HomeLayout> {
   int _currentPage = 0;
-  final List<Widget> _pages = [
-    HomeScreen(),
-    SearchScreen(),
-    FavoriteScreen(),
-    ProfileScreen(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const HomeScreen(),
+      const SearchScreen(),
+      const FavoriteScreen(),
+      ProfileScreen(user: widget.user),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
