@@ -1,6 +1,10 @@
+import 'package:chordkita/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chordkita/features/auth/presentation/bloc/auth_event.dart';
+import 'package:chordkita/features/auth/presentation/bloc/auth_state.dart';
 import 'package:chordkita/features/auth/presentation/wdigets/auth_header.dart';
 import 'package:chordkita/features/auth/presentation/wdigets/social_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback? onNavigateToLogin;
@@ -58,6 +62,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  void _onRegisterPressed() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Harap isi semua bidang!"),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Konfirmasi password tidak cocok!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Trigger event ke AuthBloc
+    context.read<AuthBloc>().add(
+      RegisterSubmitted(name: name, email: email, password: password),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Field Nama Lengkap
-                    Text(
+                    const Text(
                       "Nama Lengkap",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -96,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Field Email
-                    Text(
+                    const Text(
                       "Email",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -116,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Field Password
-                    Text(
+                    const Text(
                       "Password",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -149,7 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 16),
 
                     // Field Konfirmasi Password
-                    Text(
+                    const Text(
                       "Konfirmasi Password",
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -182,28 +218,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    // Main Action Button (Filled / Full Width)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: FilledButton(
-                        onPressed: () {},
-                        style: FilledButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    // Main Action Button dengan BlocConsumer
+                    BlocConsumer<AuthBloc, AuthState>(
+                      listener: (context, state) {
+                        if (state is AuthError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.message),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } else if (state is AuthAuthenticated) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Registrasi berhasil! Selamat datang, ${state.user.name}",
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          // Navigasi ke halaman utama/home
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
+                      },
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: FilledButton(
+                            onPressed: isLoading ? null : _onRegisterPressed,
+                            style: FilledButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Daftar",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          "Daftar",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
+
                     Row(
                       children: [
                         Expanded(child: Divider(color: Colors.grey.shade300)),
@@ -221,6 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
+
                     // Google Button
                     SocialLoginButton(
                       text: "Daftar dengan Google",

@@ -1,6 +1,10 @@
+import 'package:chordkita/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chordkita/features/auth/presentation/bloc/auth_event.dart';
+import 'package:chordkita/features/auth/presentation/bloc/auth_state.dart';
 import 'package:chordkita/features/auth/presentation/wdigets/auth_header.dart';
 import 'package:chordkita/features/auth/presentation/wdigets/social_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   final VoidCallback? onNavigateToRegister;
@@ -134,29 +138,72 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      BlocConsumer<AuthBloc, AuthState>(
+                        listener: (context, state) {
+                          if (state is AuthError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(state.message),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else if (state is AuthAuthenticated) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Selamat datang, ${state.user.name}!',
+                                ),
+                              ),
+                            );
+                            // TODO: Navigasi ke HomeScreen di sini
+                          }
+                        },
+                        builder: (context, state) {
+                          final isLoading = state is AuthLoading;
 
-                      // Modern Login Button
-                      SizedBox(
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.primaryColor,
-                            foregroundColor: Colors.white,
-                            elevation: 2,
-                            shadowColor: theme.primaryColor.withOpacity(0.4),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                          return SizedBox(
+                            height: 52,
+                            child: ElevatedButton(
+                              onPressed: isLoading
+                                  ? null // Disable tombol saat sedang loading
+                                  : () {
+                                      context.read<AuthBloc>().add(
+                                        LoginSubmitted(
+                                          email: _emailController.text,
+                                          password: _passwordController.text,
+                                        ),
+                                      );
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: theme.primaryColor,
+                                foregroundColor: Colors.white,
+                                elevation: 2,
+                                shadowColor: theme.primaryColor.withOpacity(
+                                  0.4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: isLoading
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Masuk',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ),
-                          ),
-                          child: const Text(
-                            'Masuk',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                       SizedBox(height: 20),
                       Row(
