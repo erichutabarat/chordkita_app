@@ -11,7 +11,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -20,6 +20,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Text(
               'You need to login/register before accessing this feature.',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 10),
+            TextButton(
+              onPressed: () => {Navigator.pushNamed(context, "/auth")},
+              child: Text("Login"),
             ),
           ],
         ),

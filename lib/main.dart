@@ -1,3 +1,4 @@
+import 'package:chordkita/features/auth/presentation/auth_layout.dart';
 import 'package:chordkita/features/home/presentation/home_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,10 @@ class GuitarChordApp extends StatelessWidget {
 
       // Starting screen
       initialRoute: '/home',
-      routes: {'/home': (context) => const HomeLayout()},
+      routes: {
+        '/auth': (context) => const AuthLayout(),
+        '/home': (context) => const HomeLayout(),
+      },
     );
   }
 }
