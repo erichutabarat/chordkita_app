@@ -18,7 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Icon(Icons.music_note, size: 64, color: Colors.amber),
             SizedBox(height: 16),
             Text(
-              'Your chord library is getting ready...',
+              'You need to login/register before accessing this feature.',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ],
