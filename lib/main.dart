@@ -1,5 +1,9 @@
+import 'package:chordkita/features/auth/data/repositories/auth_repository.dart';
+import 'package:chordkita/features/auth/presentation/auth_layout.dart';
+import 'package:chordkita/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:chordkita/features/home/presentation/home_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,28 +15,48 @@ class GuitarChordApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ChordKita', // Or whatever brand name you choose!
-      debugShowCheckedModeBanner: false,
+    // Inisiasi repo
+    final authRepository = AuthRepository();
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.amber,
-          brightness: Brightness.light,
+    return MultiRepositoryProvider(
+      providers: [
+        // Menyediakan Repository ke dalam widget tree
+        RepositoryProvider<AuthRepository>.value(value: authRepository),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          // 2. Inisialisasi BLoC dan menyuntikkan (inject) AuthRepository ke dalamnya
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(authRepository: authRepository),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'ChordKita', // Or whatever brand name you choose!
+          debugShowCheckedModeBanner: false,
+
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.amber,
+              brightness: Brightness.light,
+            ),
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.amber,
+              brightness: Brightness.dark,
+            ),
+          ),
+
+          // Starting screen
+          initialRoute: '/home',
+          routes: {
+            '/auth': (context) => const AuthLayout(),
+            '/home': (context) => const HomeLayout(),
+          },
         ),
       ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.amber,
-          brightness: Brightness.dark,
-        ),
-      ),
-
-      // Starting screen
-      initialRoute: '/home',
-      routes: {'/home': (context) => const HomeLayout()},
     );
   }
 }
