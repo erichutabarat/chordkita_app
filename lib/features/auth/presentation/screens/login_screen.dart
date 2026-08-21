@@ -1,4 +1,5 @@
 import 'package:chordkita/features/auth/presentation/wdigets/auth_header.dart';
+import 'package:chordkita/features/auth/presentation/wdigets/social_button.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -156,6 +157,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(color: Colors.grey.shade300)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              "Atau masuk dengan",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                          Expanded(child: Divider(color: Colors.grey.shade300)),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Google Button
+                      SocialLoginButton(
+                        text: "Masuk dengan Google",
+                        onPressed: () {
+                          // Handle Google Sign-In
+                        },
                       ),
                     ],
                   ),
