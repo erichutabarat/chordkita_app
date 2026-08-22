@@ -1,3 +1,6 @@
+import 'package:chordkita/features/chord/data/datasource/chord_datasource.dart';
+import 'package:chordkita/features/chord/data/repositories/chord_repository.dart';
+import 'package:chordkita/features/chord/domain/repositories/chord_repository.dart';
 import 'package:chordkita/features/chord/presentation/screens/chord_player_screen.dart';
 import 'package:chordkita/features/chord/presentation/screens/chord_screen.dart';
 import 'package:chordkita/features/home/domain/entities/chordsong_item.dart';
@@ -13,17 +16,29 @@ class ChordLayout extends StatefulWidget {
 
 class _ChordLayoutState extends State<ChordLayout> {
   int _currentPage = 0;
+  late final ChordRepository _chordRepository;
+  @override
+  void initState() {
+    super.initState();
+    _chordRepository = ChordRepositoryImpl(ChordRemoteDataSource());
+  }
 
   Widget get _currentScreen {
     switch (_currentPage) {
       case 0:
-        return ChordScreen(data: widget.data);
+        return ChordScreen(
+          data: widget.data,
+          chordRepository: _chordRepository,
+        );
 
       case 1:
         return ChordPlayerScreen(data: widget.data);
 
       default:
-        return ChordScreen(data: widget.data);
+        return ChordScreen(
+          data: widget.data,
+          chordRepository: _chordRepository,
+        );
     }
   }
 

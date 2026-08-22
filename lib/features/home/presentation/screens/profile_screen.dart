@@ -1,6 +1,7 @@
 import 'package:chordkita/features/auth/domain/entities/user.dart';
 import 'package:chordkita/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:chordkita/features/auth/presentation/bloc/auth_event.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +18,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.user);
+    if (kDebugMode) {
+      print(widget.user);
+    }
   }
 
   @override

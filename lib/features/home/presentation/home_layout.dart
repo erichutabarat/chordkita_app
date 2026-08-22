@@ -3,6 +3,7 @@ import 'package:chordkita/features/home/presentation/screens/favorite_screen.dar
 import 'package:chordkita/features/home/presentation/screens/home_screen.dart';
 import 'package:chordkita/features/home/presentation/screens/profile_screen.dart';
 import 'package:chordkita/features/home/presentation/screens/search_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HomeLayout extends StatefulWidget {
@@ -26,7 +27,9 @@ class _HomeLayoutState extends State<HomeLayout> {
       const FavoriteScreen(),
       ProfileScreen(user: widget.user),
     ];
-    print(widget.user);
+    if (kDebugMode) {
+      print(widget.user);
+    }
   }
 
   @override
