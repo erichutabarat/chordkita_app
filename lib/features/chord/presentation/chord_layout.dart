@@ -44,18 +44,6 @@ class _ChordLayoutState extends State<ChordLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: _currentScreen),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _goToChordPlayer,
-        child: const Icon(Icons.play_arrow_rounded),
-      ),
-    );
-  }
-
-  void _goToChordPlayer() {
-    setState(() {
-      _currentPage = 1;
-    });
+    return Scaffold(body: SafeArea(child: _currentScreen));
   }
 }
