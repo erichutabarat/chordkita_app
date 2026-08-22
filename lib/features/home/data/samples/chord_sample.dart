@@ -4,12 +4,12 @@ import 'package:flutter/foundation.dart';
 final newlyAddedSongs = [
   ChordSongItemData(
     id: 1,
-    songName: 'Akad',
-    artistName: 'Payung Teduh',
+    songName: 'Asal Kau Bahagia',
+    artistName: 'Armada',
     chordKey: 'C',
     genres: ['Pop', 'Acoustic', 'Indie'],
     // ignore: avoid_print
-    onTap: () => print('Clicked Akad'),
+    onTap: () => print('Clicked Armada'),
   ),
   ChordSongItemData(
     id: 2,
@@ -34,15 +34,12 @@ final newlyAddedSongs = [
 final List<ChordSongItemData> topSongs = [
   ChordSongItemData(
     id: 1,
-    songName: 'Akad',
-    artistName: 'Payung Teduh',
+    songName: 'Asal Kau Bahagia',
+    artistName: 'Armada',
     chordKey: 'C',
     genres: ['Pop', 'Acoustic', 'Indie'],
-    onTap: () {
-      if (kDebugMode) {
-        print('Clicked Akad');
-      }
-    },
+    // ignore: avoid_print
+    onTap: () => print('Clicked Armada'),
   ),
   ChordSongItemData(
     id: 2,

@@ -16,11 +16,15 @@ class ChordsongItem extends StatelessWidget {
             title: Text(data.songName),
             subtitle: Text(data.artistName),
             trailing: Text(data.chordKey),
-            onTap: data.onTap,
+            onTap: () => _goToChord(context),
           ),
           const Divider(),
         ],
       ),
     );
+  }
+
+  void _goToChord(BuildContext context) {
+    Navigator.pushNamed(context, '/chord', arguments: data);
   }
 }

@@ -2,6 +2,8 @@ import 'package:chordkita/features/auth/data/repositories/auth_repository.dart';
 import 'package:chordkita/features/auth/domain/entities/user.dart';
 import 'package:chordkita/features/auth/presentation/auth_layout.dart';
 import 'package:chordkita/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chordkita/features/chord/presentation/chord_layout.dart';
+import 'package:chordkita/features/home/domain/entities/chordsong_item.dart';
 import 'package:chordkita/features/home/presentation/home_layout.dart';
 import 'package:chordkita/features/loading/presentation/screens/loading_screen.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +61,12 @@ class GuitarChordApp extends StatelessWidget {
             '/home': (context) {
               final user = ModalRoute.of(context)?.settings.arguments as User?;
               return HomeLayout(user: user);
+            },
+            "/chord": (context) {
+              final data =
+                  ModalRoute.of(context)!.settings.arguments
+                      as ChordSongItemData;
+              return ChordLayout(data: data);
             },
           },
         ),
