@@ -23,7 +23,7 @@ class ChordScreen extends StatefulWidget {
 
 class _ChordScreenState extends State<ChordScreen> {
   _LoadState _state = _LoadState.loading;
-  List<List<ChordSegment>> _lines = [];
+  List<ChordLine> _lines = [];
   int _transpose = 0;
   double _fontSize = 15.0;
   String? _errorMessage;
@@ -465,13 +465,22 @@ class _ChordScreenState extends State<ChordScreen> {
     }
   }
 
-  Widget _buildLine(List<ChordSegment> segments, ThemeData theme, bool isDark) {
-    if (segments.length == 1 &&
-        segments.first.chord == null &&
-        segments.first.text.trim().isEmpty) {
-      return SizedBox(height: _fontSize * 1.2);
+  Widget _buildLine(ChordLine line, ThemeData theme, bool isDark) {
+    switch (line.type) {
+      case ChordLineType.blank:
+        return SizedBox(height: _fontSize * 1.2);
+      case ChordLineType.section:
+        return _buildSectionLine(line.segments, theme, isDark);
+      case ChordLineType.lyric:
+        return _buildLyricLine(line.segments, theme, isDark);
     }
+  }
 
+  Widget _buildLyricLine(
+    List<ChordSegment> segments,
+    ThemeData theme,
+    bool isDark,
+  ) {
     return Padding(
       padding: EdgeInsets.only(bottom: _fontSize * 0.5),
       child: Wrap(
@@ -506,6 +515,99 @@ class _ChordScreenState extends State<ChordScreen> {
             ],
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildSectionLine(
+    List<ChordSegment> segments,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    final primaryColor = theme.colorScheme.primary;
+
+    final label = (segments.isNotEmpty && segments.first.chord == null)
+        ? segments.first.text.trim()
+        : '';
+
+    final chords = segments
+        .where((s) => s.chord != null)
+        .map((s) => s.chord!)
+        .toList();
+
+    final trailingNote = segments.isNotEmpty && segments.last.chord != null
+        ? segments.last.text.trim()
+        : '';
+
+    return Container(
+      margin: EdgeInsets.only(top: _fontSize * 0.4, bottom: _fontSize * 0.6),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: _fontSize * 0.4),
+      decoration: BoxDecoration(
+        color: primaryColor.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(8),
+        border: Border(left: BorderSide(color: primaryColor, width: 3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (label.isNotEmpty)
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: _fontSize * 0.95,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+                color: primaryColor,
+              ),
+            ),
+          if (chords.isNotEmpty) ...[
+            if (label.isNotEmpty) SizedBox(height: _fontSize * 0.35),
+            Wrap(
+              spacing: _fontSize * 0.6, // gap between chords
+              runSpacing: _fontSize * 0.3,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ...chords.map(
+                  (chord) => _buildChordChip(
+                    transposeChord(chord, _transpose),
+                    primaryColor,
+                  ),
+                ),
+                if (trailingNote.isNotEmpty)
+                  Text(
+                    trailingNote,
+                    style: TextStyle(
+                      fontSize: _fontSize * 0.8,
+                      fontStyle: FontStyle.italic,
+                      color: primaryColor.withOpacity(0.75),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChordChip(String chordLabel, Color primaryColor) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: _fontSize * 0.5,
+        vertical: _fontSize * 0.15,
+      ),
+      decoration: BoxDecoration(
+        color: primaryColor.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        chordLabel,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: _fontSize * 0.85,
+          color: primaryColor,
+        ),
       ),
     );
   }

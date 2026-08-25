@@ -43,9 +43,9 @@ final List<ChordSongItemData> topSongs = [
   ),
   ChordSongItemData(
     id: 2,
-    songName: 'Sempurna',
-    artistName: 'Andra and The Backbone',
-    chordKey: 'A',
+    songName: 'Mauliate Hasian',
+    artistName: 'Gok Malau',
+    chordKey: 'C',
     genres: ['Rock', 'Ballad'],
     onTap: () {
       if (kDebugMode) {
