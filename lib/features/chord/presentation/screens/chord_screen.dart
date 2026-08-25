@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:chordkita/core/utils/chord_parser.dart';
 import 'package:chordkita/features/chord/domain/repositories/chord_repository.dart';
@@ -27,10 +28,28 @@ class _ChordScreenState extends State<ChordScreen> {
   double _fontSize = 15.0;
   String? _errorMessage;
 
+  // --- Auto-scroll state ---
+  final ScrollController _scrollController = ScrollController();
+  Timer? _autoScrollTimer;
+  bool _isAutoScrolling = false;
+
+  // Pixels moved per tick at each speed level. Index = speed level - 1.
+  static const List<double> _speedSteps = [0.4, 0.8, 1.2, 1.8, 2.6, 3.6];
+  int _speedLevel = 2; // 1-based index into _speedSteps (default: level 3)
+
+  static const Duration _tickInterval = Duration(milliseconds: 40);
+
   @override
   void initState() {
     super.initState();
     _loadChord();
+  }
+
+  @override
+  void dispose() {
+    _autoScrollTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadChord() async {
@@ -62,6 +81,60 @@ class _ChordScreenState extends State<ChordScreen> {
     // TODO: Add your navigation logic to the chord player screen here
   }
 
+  // --- Auto-scroll logic ---
+
+  void _toggleAutoScroll() {
+    if (_isAutoScrolling) {
+      _stopAutoScroll();
+    } else {
+      _startAutoScroll();
+    }
+  }
+
+  void _startAutoScroll() {
+    if (!_scrollController.hasClients) return;
+    _autoScrollTimer?.cancel();
+    setState(() => _isAutoScrolling = true);
+
+    _autoScrollTimer = Timer.periodic(_tickInterval, (timer) {
+      if (!_scrollController.hasClients) return;
+
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final current = _scrollController.offset;
+
+      if (current >= maxScroll) {
+        _stopAutoScroll();
+        return;
+      }
+
+      final step = _speedSteps[_speedLevel - 1];
+      final newOffset = (current + step).clamp(0.0, maxScroll);
+      _scrollController.jumpTo(newOffset);
+    });
+  }
+
+  void _stopAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = null;
+    if (mounted) {
+      setState(() => _isAutoScrolling = false);
+    } else {
+      _isAutoScrolling = false;
+    }
+  }
+
+  void _increaseSpeed() {
+    if (_speedLevel < _speedSteps.length) {
+      setState(() => _speedLevel++);
+    }
+  }
+
+  void _decreaseSpeed() {
+    if (_speedLevel > 1) {
+      setState(() => _speedLevel--);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -73,63 +146,87 @@ class _ChordScreenState extends State<ChordScreen> {
           : const Color(0xFFF8F9FA),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 12),
-                // Rounded Container Header for Song Title & Artist
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 20,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white10
-                          : Colors.black.withOpacity(0.05),
+          NotificationListener<ScrollNotification>(
+            // Pause auto-scroll if the user manually grabs the list.
+            onNotification: (notification) {
+              if (_isAutoScrolling &&
+                  notification is ScrollStartNotification &&
+                  notification.dragDetails != null) {
+                _stopAutoScroll();
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 12),
+                  // Rounded Container Header for Song Title & Artist
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 18,
+                      horizontal: 20,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white10
+                            : Colors.black.withOpacity(0.05),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        widget.data.songName,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.data.artistName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          widget.data.songName,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.data.artistName,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Chord Content Area
-                _buildContent(theme, isDark),
-              ],
+                  // Chord Content Area
+                  _buildContent(theme, isDark),
+                ],
+              ),
             ),
           ),
+
+          // Right-side Floating Auto-scroll Control
+          if (_state == _LoadState.loaded)
+            Positioned(
+              right: 16,
+              top: 0,
+              bottom: 0,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: _buildAutoScrollControl(theme, isDark),
+              ),
+            ),
 
           // Unified Floating Bar (Sizing + Transpose + Player Play Button)
           if (_state == _LoadState.loaded)
@@ -139,6 +236,72 @@ class _ChordScreenState extends State<ChordScreen> {
               bottom: 24,
               child: _buildFloatingToolbar(theme, isDark),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAutoScrollControl(ThemeData theme, bool isDark) {
+    final primaryColor = theme.colorScheme.primary;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2C2C2E) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Speed up
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.keyboard_arrow_up_rounded, size: 20),
+            onPressed: _speedLevel < _speedSteps.length ? _increaseSpeed : null,
+            tooltip: 'Faster',
+          ),
+
+          // Speed level label
+          Text(
+            '${_speedLevel}x',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: primaryColor,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          // Play / Pause auto-scroll
+          IconButton.filled(
+            onPressed: _toggleAutoScroll,
+            icon: Icon(
+              _isAutoScrolling ? Icons.pause_rounded : Icons.play_arrow_rounded,
+            ),
+            tooltip: _isAutoScrolling ? 'Pause auto-scroll' : 'Auto-scroll',
+            style: IconButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: theme.colorScheme.onPrimary,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          // Speed down
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+            onPressed: _speedLevel > 1 ? _decreaseSpeed : null,
+            tooltip: 'Slower',
+          ),
         ],
       ),
     );
