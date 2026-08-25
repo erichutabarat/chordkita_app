@@ -187,13 +187,28 @@ class _ChordScreenState extends State<ChordScreen> {
                     ),
                     child: Column(
                       children: [
-                        Text(
-                          widget.data.songName,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(
+                              Icons.download_for_offline_rounded,
+                              color: Colors.brown,
+                              size: 28,
+                            ),
+                            Text(
+                              widget.data.songName,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Icon(
+                              Icons.favorite_rounded,
+                              color: Colors.brown,
+                              size: 28,
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 4),
                         Text(
